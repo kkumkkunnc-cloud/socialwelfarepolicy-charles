@@ -11,94 +11,51 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Noto Sans KR 폰트 적용 */
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-        }
-        /* 선택된 정답/오답 스타일 */
-        .option-button.selected.correct {
-            background-color: #dcfce7; /* green-100 */
-            border-color: #22c55e; /* green-500 */
-            font-weight: 700;
-        }
-        .option-button.selected.incorrect {
-            background-color: #fee2e2; /* red-100 */
-            border-color: #ef4444; /* red-500 */
-            font-weight: 700;
-        }
-        /* 정답 공개 시 정답 버튼 스타일 */
-        .option-button.reveal-correct {
-            background-color: #dcfce7; /* green-100 */
-            border-color: #22c55e; /* green-500 */
-        }
-        /* 문제/해설 줄바꿈 처리 */
-        .question-text,
-        .explanation-text,
-        .option-text {
-            white-space: pre-wrap;
-        }
-        .option-text {
-            display: block; /* span 내부 줄바꿈 반영 */
-        }
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .option-button.selected.correct { background-color:#dcfce7; border-color:#22c55e; font-weight:700; }
+        .option-button.selected.incorrect { background-color:#fee2e2; border-color:#ef4444; font-weight:700; }
+        .option-button.reveal-correct { background-color:#dcfce7; border-color:#22c55e; }
+        .question-text,.explanation-text,.option-text { white-space:pre-wrap; }
+        .option-text { display:block; }
     </style>
 </head>
 <body class="bg-gray-100">
-
     <div class="container max-w-4xl mx-auto p-4 sm:p-8">
-        
-        <!-- 헤더 -->
         <header class="bg-white shadow-lg rounded-lg p-6 mb-8">
             <h1 class="text-3xl font-bold text-center text-blue-800">사회복지정책론 예상문제 100선</h1>
             <p class="text-center text-gray-600 mt-2">6강 ~ 15강 범위</p>
-            
-            <!-- 점수판 -->
             <div id="scoreboard" class="text-center mt-6 p-4 bg-blue-50 rounded-lg">
                 <span class="text-2xl font-bold text-blue-700" id="score-text">0 / 100</span>
                 <p class="text-sm text-gray-500 mt-1">맞춘 문제 수</p>
             </div>
-
-            <!-- 컨트롤 버튼 -->
             <div class="flex flex-col sm:flex-row justify-center gap-4 mt-6">
-                <button id="reset-button" class="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
-                    퀴즈 초기화
-                </button>
-                <button id="reveal-button" class="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
-                    전체 정답 및 해설 보기
-                </button>
+                <button id="reset-button" class="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">퀴즈 초기화</button>
+                <button id="reveal-button" class="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">전체 정답 및 해설 보기</button>
             </div>
         </header>
 
-        <!-- 퀴즈 컨테이너 -->
-        <main id="quiz-container">
-            <!-- 퀴즈 문제는 여기에 동적으로 생성됩니다 -->
-        </main>
-
+        <main id="quiz-container"></main>
     </div>
 
     <script>
         // --- 퀴즈 데이터 ---
-        
-        // 강의별 헤더
         const lectureHeaders = {
-            1: "제6강: 사회복지정책 의제 및 대안의 형성 (Q1 ~ Q10)",
-            11: "제7강: 사회복지정책의 결정, 집행, 평가 (Q11 ~ Q20)",
-            21: "제8강: 사회복지정책의 재원 및 경제적 효과 (Q21 ~ Q30)",
-            31: "제9강: 사회복지정책의 설계: 할당과 급여 (Q31 ~ Q40)",
-            41: "제10강: 사회적 위험과 사회보장 체계 (Q41 ~ Q50)",
-            51: "제11강: 빈곤과 사회보장 (Q51 ~ Q60)",
-            61: "제12강: 5대 사회보험의 이해 (Q61 ~ Q70)",
-            71: "제13강: 사회서비스의 개념과 전달체계 (Q71 ~ Q80)",
-            81: "제14강: 한국 사회복지정책의 역사와 현황 (Q81 ~ Q90)",
-            91: "제15강: 사회복지정책의 실천과 사회운동 (Q91 ~ Q100)"
+            1:"제6강: 사회복지정책 의제 및 대안의 형성 (Q1 ~ Q10)",
+            11:"제7강: 사회복지정책의 결정, 집행, 평가 (Q11 ~ Q20)",
+            21:"제8강: 사회복지정책의 재원 및 경제적 효과 (Q21 ~ Q30)",
+            31:"제9강: 사회복지정책의 설계: 할당과 급여 (Q31 ~ Q40)",
+            41:"제10강: 사회적 위험과 사회보장 체계 (Q41 ~ Q50)",
+            51:"제11강: 빈곤과 사회보장 (Q51 ~ Q60)",
+            61:"제12강: 5대 사회보험의 이해 (Q61 ~ Q70)",
+            71:"제13강: 사회서비스의 개념과 전달체계 (Q71 ~ Q80)",
+            81:"제14강: 한국 사회복지정책의 역사와 현황 (Q81 ~ Q90)",
+            91:"제15강: 사회복지정책의 실천과 사회운동 (Q91 ~ Q100)"
         };
 
-        // 100문제 데이터 (원문 그대로)
-        const quizData = [/* ----- 생략 없이 원문 데이터 사용 ----- */
-            /* … (질문 1~100 원문) … */
-        ];
+        // ⬇️ 질문 1~100은 그대로 유지 (생략)
+        const quizData = [/* ...당신이 준 1~100 데이터 그대로... */];
 
-        // --- 퀴즈 애플리케이션 로직 ---
-
+        // --- 상태 & 엘리먼트 ---
         let score = 0;
         let answeredQuestions = new Set();
         const totalQuestions = quizData.length;
@@ -108,72 +65,54 @@
         const resetButton = document.getElementById('reset-button');
         const revealButton = document.getElementById('reveal-button');
 
-        // 1. 퀴즈 렌더링 함수
+        // --- 렌더링 ---
         function renderQuiz() {
-            // 컨테이너 초기화
             quizContainer.innerHTML = '';
-            // 상태 초기화
             score = 0;
             answeredQuestions.clear();
             updateScoreboard();
 
-            let quizHTML = '';
-
+            let html = '';
             quizData.forEach(q => {
-                // 강의 헤더 추가
                 if (lectureHeaders[q.id]) {
-                    quizHTML += `<h2 class="text-2xl font-bold text-gray-700 mt-10 mb-4 pb-2 border-b-2 border-blue-200">${lectureHeaders[q.id]}</h2>`;
+                    html += `<h2 class="text-2xl font-bold text-gray-700 mt-10 mb-4 pb-2 border-b-2 border-blue-200">${lectureHeaders[q.id]}</h2>`;
                 }
-
-                // 옵션 버튼 HTML 생성
-                const optionsHTML = q.options.map((option, index) => `
+                const optionsHTML = q.options.map((opt, i) => `
                     <button class="option-button w-full text-left p-3 mb-2 rounded-md border border-gray-300 hover:bg-gray-50 transition-colors"
-                            data-question-id="${q.id}"
-                            data-option-index="${index}">
-                        <span class="font-semibold mr-2">${index + 1}.</span>
-                        <span class="option-text">${option}</span>
+                            data-question-id="${q.id}" data-option-index="${i}">
+                        <span class="font-semibold mr-2">${i+1}.</span>
+                        <span class="option-text">${opt}</span>
                     </button>
                 `).join('');
 
-                // 문제 카드 HTML 생성
-                quizHTML += `
+                html += `
                     <div id="card-Q${q.id}" class="bg-white shadow-lg rounded-lg p-6 mb-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4">
-                            Q${q.id}.
-                            <span class="font-medium question-text">${q.question}</span>
+                            Q${q.id}. <span class="font-medium question-text">${q.question}</span>
                         </h3>
                         <div class="options-container" data-question-id="${q.id}">
                             ${optionsHTML}
                         </div>
-                        <!-- 해설 영역 (초기에는 숨김) -->
                         <div id="explanation-Q${q.id}" class="hidden mt-4 p-4 border-t border-gray-200">
                             <h4 id="result-Q${q.id}" class="text-xl font-bold mb-2"></h4>
-                            <p class="text-gray-700">
-                                <span class="font-semibold">정답:</span> ${q.answer}번
-                            </p>
-                            <p class="text-gray-700 mt-2 explanation-text">
-                                <span class="font-semibold">해설:</span> ${q.explanation}
-                            </p>
+                            <p class="text-gray-700"><span class="font-semibold">정답:</span> ${q.answer}번</p>
+                            <p class="text-gray-700 mt-2 explanation-text"><span class="font-semibold">해설:</span> ${q.explanation}</p>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
-
-            quizContainer.innerHTML = quizHTML;
+            quizContainer.innerHTML = html;
         }
 
-        // 2. 정답 처리 함수 (이벤트 위임 사용)
+        // --- 정답 처리 ---
         function handleAnswerClick(event) {
             const clickedButton = event.target.closest('.option-button');
-            if (!clickedButton) return; // 버튼이 아닌 곳 클릭 시 무시
+            if (!clickedButton) return;
 
-            const questionId = parseInt(clickedButton.dataset.questionId);
-            const selectedOptionIndex = parseInt(clickedButton.dataset.optionIndex);
-            
-            // 이미 답한 문제인지 확인
+            const questionId = Number(clickedButton.dataset.questionId);
+            const selectedOptionIndex = Number(clickedButton.dataset.optionIndex);
+            if (Number.isNaN(questionId) || Number.isNaN(selectedOptionIndex)) return;
+
             if (answeredQuestions.has(questionId)) return;
-
-            // 답한 문제로 기록
             answeredQuestions.add(questionId);
 
             const questionData = quizData.find(q => q.id === questionId);
@@ -181,8 +120,7 @@
 
             const isCorrect = (selectedOptionIndex + 1) === questionData.answer;
 
-            // UI 업데이트
-            const parentCard = clickedButton.closest(`#card-Q${questionId}`);
+            const parentCard = document.getElementById(`card-Q${questionId}`);
             if (!parentCard) return;
 
             const optionsContainer = parentCard.querySelector('.options-container');
@@ -190,44 +128,37 @@
 
             const allOptionButtons = optionsContainer.querySelectorAll('.option-button');
 
-            // ✅ 버그 수정: q.id -> questionId
             const explanationBox = parentCard.querySelector(`#explanation-Q${questionId}`);
             const resultText = parentCard.querySelector(`#result-Q${questionId}`);
             if (!explanationBox || !resultText) return;
 
-            // 모든 버튼 비활성화
-            allOptionButtons.forEach(btn => btn.disabled = true);
+            allOptionButtons.forEach(btn => { btn.disabled = true; });
 
-            // 스타일 적용
             if (isCorrect) {
-                clickedButton.classList.add('selected', 'correct');
+                clickedButton.classList.add('selected','correct');
                 resultText.textContent = '정답입니다!';
                 resultText.className = 'text-xl font-bold mb-2 text-green-600';
                 score++;
             } else {
-                clickedButton.classList.add('selected', 'incorrect');
-                // 오답일 경우, 정답 버튼도 표시
-                const correctButton = optionsContainer.querySelector(`[data-option-index="${questionData.answer - 1}"]`);
-                if (correctButton) {
-                    correctButton.classList.add('reveal-correct');
-                }
+                clickedButton.classList.add('selected','incorrect');
+                const correctButton = optionsContainer.querySelector(
+                    `[data-option-index="${questionData.answer - 1}"]`
+                );
+                if (correctButton) correctButton.classList.add('reveal-correct');
                 resultText.textContent = '오답입니다.';
                 resultText.className = 'text-xl font-bold mb-2 text-red-600';
             }
 
-            // 해설 보이기
             explanationBox.classList.remove('hidden');
-
-            // 점수판 업데이트
             updateScoreboard();
         }
 
-        // 3. 점수판 업데이트 함수
+        // --- 점수판 ---
         function updateScoreboard() {
             scoreText.textContent = `${score} / ${totalQuestions}`;
         }
 
-        // 4. 전체 정답 보기 함수
+        // --- 전체 정답 공개 ---
         function revealAllAnswers() {
             quizData.forEach(q => {
                 if (answeredQuestions.has(q.id)) return;
@@ -244,36 +175,24 @@
                 const resultText = parentCard.querySelector(`#result-Q${q.id}`);
                 if (!explanationBox || !resultText) return;
 
-                // 모든 버튼 비활성화
-                allOptionButtons.forEach(btn => btn.disabled = true);
+                allOptionButtons.forEach(btn => { btn.disabled = true; });
 
-                // 정답 버튼 표시
-                const correctButton = optionsContainer.querySelector(`[data-option-index="${q.answer - 1}"]`);
-                if (correctButton) {
-                    correctButton.classList.add('reveal-correct');
-                }
+                const correctButton = optionsContainer.querySelector(
+                    `[data-option-index="${q.answer - 1}"]`
+                );
+                if (correctButton) correctButton.classList.add('reveal-correct');
 
-                // 해설 보이기
                 resultText.textContent = '정답 및 해설';
                 resultText.className = 'text-xl font-bold mb-2 text-blue-600';
                 explanationBox.classList.remove('hidden');
             });
         }
-        
+
         // --- 이벤트 리스너 ---
-
-        // 퀴즈 앱 초기화
         document.addEventListener('DOMContentLoaded', renderQuiz);
-
-        // 정답 클릭 이벤트 (이벤트 위임)
         quizContainer.addEventListener('click', handleAnswerClick);
-
-        // 초기화 버튼
         resetButton.addEventListener('click', renderQuiz);
-
-        // 전체 정답 보기 버튼
         revealButton.addEventListener('click', revealAllAnswers);
-
     </script>
 </body>
 </html>
