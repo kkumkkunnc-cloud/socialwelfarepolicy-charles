@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>사회복지정책론(6~15강) 100문항 | 온라인 모의고사</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI","Noto Sans KR",Inter,Roboto,"Helvetica Neue","Apple SD Gothic Neo",sans-serif}
+  .option{transition:all .2s}
+  .option.correct{background:#d1fae5;border-color:#34d399;color:#065f46;font-weight:600}
+  .option.incorrect{background:#fee2e2;border-color:#f87171;color:#991b1b}
+  .fade-in{animation:fade .2s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body class="bg-slate-100 min-h-dvh p-4 sm:p-6">
+  <div class="mx-auto max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden">
+    <!-- 헤더 -->
+    <header class="p-5 border-b bg-gradient-to-r from-indigo-50 to-blue-50">
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-800">
+          사회복지정책론(6~15강) 100문항 모의고사
+        </h1>
+        <div class="flex items-center gap-2">
+          <button id="btnImport" class="px-3 py-2 rounded-lg bg-slate-800 text-white text-sm hover:bg-black">원문 붙여넣기</button>
+          <button id="btnResume" class="px-3 py-2 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 hidden">재개</button>
+          <button id="btnReset" class="px-3 py-2 rounded-lg bg-slate-200 text-slate-800 text-sm hover:bg-slate-300">초기화</button>
+        </div>
+      </div>
+      <p class="text-slate-600 mt-2 text-sm">
+        붙여넣기 → 자동 파싱 → 무작위 출제 · 정답/해설 · 오답노트 · CSV 내보내기 지원
+      </p>
+    </header>
+
+    <!-- 컨트롤 바 -->
+    <div class="p-4 border-b flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+      <div class="flex items-center gap-2">
+        <label class="text-sm text-slate-600">챕터:</label>
+        <select id="filterChapter" class="px-3 py-2 rounded border bg-white text-sm">
+          <option value="all">전체(6~15강)</option>
+          <option value="제6강">제6강</option>
+          <option value="제7강">제7강</option>
+          <option value="제8강">제8강</option>
+          <option value="제9강">제9강</option>
+          <option value="제10강">제10강</option>
+          <option value="제11강">제11강</option>
+          <option value="제12강">제12강</option>
+          <option value="제13강">제13강</option>
+          <option value="제14강">제14강</option>
+          <option value="제15강">제15강</option>
+        </select>
+
+        <label class="text-sm text-slate-600 ml-3">출제:</label>
+        <select id="modeSelect" class="px-3 py-2 rounded border bg-white text-sm">
+          <option value="shuffle">무작위(권장)</option>
+          <option value="ordered">순서대로(Q1→Q100)</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="btnStart" class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700">시작</button>
+        <button id="btnExport" class="px-3 py-2 rounded-lg bg-emerald-600 text-white text-sm hover:bg-emerald-700">결과 CSV</button>
+        <button id="btnReview" class="px-3 py-2 rounded-lg bg-amber-500 text-white text-sm hover:bg-amber-600">오답노트</button>
+      </div>
+    </div>
+
+    <!-- 진행 바 -->
+    <div class="px-4 pt-4">
+      <div class="flex justify-between text-xs text-slate-600 mb-1">
+        <div id="progressText">진행 0 / 0</div>
+        <div id="chapterText">-</div>
+      </div>
+      <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+        <div id="progressBar" class="h-2 bg-blue-600 rounded-full transition-all" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- 본문 -->
+    <main id="main" class="p-4 sm:p-6">
+      <!-- 안내 -->
+      <div id="welcome" class="text-slate-700">
+        <div class="bg-slate-50 border rounded-xl p-5">
+          <h2 class="font-semibold text-lg mb-2">사용 방법</h2>
+          <ol class="list-decimal pl-5 space-y-1 text-sm">
+            <li><strong>원문 붙여넣기</strong>를 눌러, 지금 메시지에 있는 Q1~Q100 전체 텍스트를 그대로 붙여넣고 <em>가져오기</em>.</li>
+            <li>챕터/출제방식 선택 후 <strong>시작</strong>.</li>
+            <li>정답 선택 시 바로 채점&해설 표시. <kbd>1</kbd>~<kbd>4</kbd>, <kbd>N</kbd> 키 지원.</li>
+            <li>진행 상황은 자동 저장됩니다(브라우저만 동일하면 재개 가능).</li>
+          </ol>
+          <p class="mt-3 text-xs text-slate-500">* 파서가 <em>정답: ③</em> 또는 <em>정답: 3</em> 모두 인식. <em>해설:</em>은 다음 문제 전까지를 하나의 해설로 수집합니다.</p>
+        </div>
+
+        <div class="mt-5 text-xs text-slate-500">
+          테스트용 미니 데이터가 포함되어 있어, 붙여넣기 없이도 바로 <b>시작</b>을 눌러 동작을 확인할 수 있습니다.
+        </div>
+      </div>
+
+      <!-- 문제 영역 -->
+      <section id="quiz" class="hidden">
+        <h2 id="qTitle" class="text-lg sm:text-xl font-bold text-slate-900 mb-3 leading-relaxed"></h2>
+        <div id="options" class="grid grid-cols-1 gap-2"></div>
+        <div id="explain" class="hidden mt-5 p-4 border rounded-lg bg-blue-50 text-slate-800 fade-in">
+          <h3 class="font-semibold mb-1">정답 및 해설</h3>
+          <div id="explainText" class="text-sm leading-relaxed whitespace-pre-wrap"></div>
+        </div>
+        <div class="mt-6 flex items-center justify-between">
+          <div class="text-sm text-slate-600" id="metaText"></div>
+          <button id="btnNext" class="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700">다음 문제</button>
+        </div>
+      </section>
+
+      <!-- 결과 -->
+      <section id="result" class="hidden">
+        <div class="text-center">
+          <h2 class="text-2xl font-extrabold text-slate-900 mb-2">결과</h2>
+          <p class="text-slate-700 mb-4">총 <span id="resTotal">0</span>문항 중 <span id="resCorrect" class="font-bold text-emerald-600">0</span>개 정답</p>
+          <div class="inline-block bg-blue-100 px-6 py-5 rounded-full text-4xl font-extrabold text-blue-700 shadow-inner">
+            <span id="resScore">0</span>점
+          </div>
+          <div class="mt-6 flex gap-2 justify-center">
+            <button id="btnRestart" class="px-4 py-2 rounded-lg bg-slate-800 text-white hover:bg-black">다시 풀기</button>
+            <button id="btnGoWrong" class="px-4 py-2 rounded-lg bg-amber-500 text-white hover:bg-amber-600">오답만 풀기</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 오답노트 -->
+      <section id="review" class="hidden">
+        <h2 class="text-xl font-bold mb-3">오답노트</h2>
+        <div id="reviewList" class="space-y-3"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 붙여넣기 모달 -->
+  <dialog id="dlg" class="w-full max-w-4xl rounded-2xl border p-0 shadow-2xl backdrop:bg-black/20">
+    <form method="dialog" class="p-0">
+      <div class="p-4 border-b bg-slate-50 flex items-center justify-between">
+        <h3 class="font-semibold">Q1~Q100 원문 붙여넣기</h3>
+        <button class="px-3 py-1 text-sm rounded bg-slate-200 hover:bg-slate-300">닫기</button>
+      </div>
+      <div class="p-4">
+        <textarea id="paste" class="w-full h-64 p-3 border rounded-lg font-mono text-xs" placeholder="여기에 Q1~Q100 전체 텍스트를 그대로 붙여넣으세요.&#10;예) Q1 ... (1) ... (2) ... (3) ... (4) ...&#10;정답: ③&#10;해설: ...&#10;Q2 ..."></textarea>
+        <div class="mt-3 flex items-center justify-between">
+          <div class="text-xs text-slate-500">
+            • 동그라미 숫자(①②③④), 일반 숫자(1~4) 모두 인식<br/>
+            • ‘해설:’은 다음 문제 시작 전까지를 해설로 인식
+          </div>
+          <div class="flex gap-2">
+            <button id="btnParse" type="button" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">가져오기</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+<script>
+/* ===========================
+  유틸
+=========================== */
+const $$ = sel => document.querySelector(sel);
+const $$$ = sel => Array.from(document.querySelectorAll(sel));
+const circledToNum = (s) => {
+  // ①-⑩ 유니코드 대응
+  const map = { "①":1,"②":2,"③":3,"④":4,"⑤":5,"⑥":6,"⑦":7,"⑧":8,"⑨":9,"⑩":10 };
+  if (map[s]) return map[s];
+  // 숫자 문자열
+  const m = String(s).match(/\d+/);
+  return m ? parseInt(m[0],10) : NaN;
+};
+const chapterByQ = (qnum) => {
+  if (qnum<=10) return "제6강";
+  if (qnum<=20) return "제7강";
+  if (qnum<=30) return "제8강";
+  if (qnum<=40) return "제9강";
+  if (qnum<=50) return "제10강";
+  if (qnum<=60) return "제11강";
+  if (qnum<=70) return "제12강";
+  if (qnum<=80) return "제13강";
+  if (qnum<=90) return "제14강";
+  return "제15강";
+};
+const shuffle = (a) => {
+  const arr = a.slice();
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+};
+const save = (key, val) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(val));
+  } catch(e) {
+    console.warn("localStorage 저장 실패:", e);
+  }
+};
+const load = (key, fallback=null) => {
+  try{
+    const v = localStorage.getItem(key);
+    return v?JSON.parse(v):fallback
+  }catch(e){
+    console.warn("localStorage 로드 실패:", e);
+    return fallback
+  }
+}
+const download = (filename, text) => {
+  const blob = new Blob(["\uFEFF"+text], {type:"text/csv;charset=utf-8;"}); // UTF-8 BOM 추가
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+};
+// 커스텀 알림창
+const customAlert = (msg) => {
+    // 이미 알림창이 있으면 무시
+    if ($$("#customAlert")) return;
+    const alertBox = document.createElement("div");
+    alertBox.id = "customAlert";
+    alertBox.className = "fixed top-5 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 fade-in";
+    alertBox.textContent = msg;
+    document.body.appendChild(alertBox);
+    setTimeout(() => {
+        alertBox.style.animation = "fade-out 0.3s ease forwards";
+        setTimeout(() => alertBox.remove(), 300);
+    }, 2500);
+    // Fade-out 애니메이션
+    if (!document.getElementById("customAlertStyles")) {
+        const style = document.createElement("style");
+        style.id = "customAlertStyles";
+        style.innerHTML = `@keyframes fade-out { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, -10px); } }`;
+        document.head.appendChild(style);
+    }
+};
+// 커스텀 확인창
+const customConfirm = (msg) => {
+  return new Promise((resolve) => {
+    const dialog = document.createElement("dialog");
+    dialog.id = "customConfirmDialog";
+    dialog.className = "w-full max-w-sm rounded-2xl border p-0 shadow-2xl backdrop:bg-black/30 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50";
+    dialog.innerHTML = `
+      <form method="dialog" class="p-0">
+        <div class="p-5">
+          <p class="text-slate-800 text-center">${msg}</p>
+        </div>
+        <div class="p-3 bg-slate-50 flex justify-end gap-2 border-t">
+          <button id="confirmCancel" class="px-4 py-2 rounded-lg bg-slate-200 text-slate-800 text-sm hover:bg-slate-300">취소</button>
+          <button id="confirmOk" class="px-4 py-2 rounded-lg bg-red-600 text-white text-sm hover:bg-red-700">확인</button>
+        </div>
+      </form>
+    `;
+    document.body.appendChild(dialog);
+    dialog.showModal();
+    $$("#confirmOk").addEventListener("click", () => {
+      dialog.close();
+      dialog.remove();
+      resolve(true);
+    });
+    $$("#confirmCancel").addEventListener("click", () => {
+      dialog.close();
+      dialog.remove();
+      resolve(false);
+    });
+    dialog.addEventListener("close", () => {
+        dialog.remove();
+        resolve(false);
+    });
+  });
+};
+
+
+/* ===========================
+  데이터(테스트용 소수) + 상태
+=========================== */
+let bank = load("swp_bank"); // 전체 원천(파싱 결과)
+let run = load("swp_run");   // 현재 세션 진행상태
+
+// 테스트용 3문항(붙여넣기 없이도 동작 확인 가능)
+const demoBank = [
+  {id:1, chapter:"제6강", q:"정책과정 5단계 모형을 옳게 나열한 것은?", options:["의제→결정→대안→집행→평가","사회문제→결정→대안→집행→평가","의제→대안→결정→집행→평가","사회문제→의제→결정→집행→환류"], answer:2, exp:"의제→대안형성 및 분석→결정→집행→평가."},
+  {id:2, chapter:"제7강", q:"만족모형(Satisficing)의 핵심은?", options:["완전 합리성","점증주의","초합리성","충분히 만족스런 대안 선택"], answer:3, exp:"제한된 합리성하에서 충분히 만족스러운 대안을 선택."},
+  {id:3, chapter:"제8강", q:"가치재(Merit Goods)에 해당하는 것은?", options:["공원 등 공공재","완전 사적재","공교육·공공임대 등","열등재"], answer:2, exp:"가치재는 온정적 간섭주의 하에 사회적으로 바람직한 수준으로 제공."},
+];
+
+if(!bank || bank.length === 0){ bank = demoBank; save("swp_bank", bank); }
+
+/* ===========================
+  파서: 붙여넣은 Q1~Q100 → 구조화
+=========================== */
+function parsePasted(text){
+  const lines = text.replace(/\r/g,'').split('\n');
+
+  const items = [];
+  let i=0; let curr=null;
+  let lineErrors = [];
+
+  function pushCurr(){
+    if(!curr) return;
+    if(curr.options.length!==4) {
+        lineErrors.push(`Q${curr.id} 선택지가 4개가 아닙니다. (현재 ${curr.options.length}개)`);
+    }
+    if(typeof curr.answer!=="number") {
+        lineErrors.push(`Q${curr.id} 정답을 찾지 못했습니다.`);
+    }
+    if(!curr.exp) curr.exp="";
+    items.push(curr);
+    curr=null;
+  }
+
+  while(i<lines.length){
+    let line = lines[i].trim();
+
+    // 새 문제 시작: Q숫자 공백 뒤 텍스트
+    let mQ = line.match(/^Q\s?(\d+)\s+(.+)$/) || line.match(/^Q(\d+)\s+(.+)$/);
+    if(mQ){
+      // 이전 문제 저장
+      pushCurr();
+      const qnum = parseInt(mQ[1],10);
+      curr = { id:qnum, chapter:chapterByQ(qnum), q:mQ[2].trim(), options:[], answer:undefined, exp:"" };
+      i++; continue;
+    }
+
+    // 선택지 (1)~(4) 또는 ①~④
+    let mOpt = line.match(/^\((\d)\)\s*(.+)$/) || line.match(/^([①②③④])\s*(.+)$/);
+    if(mOpt && curr){
+      const idx = circledToNum(mOpt[1]) - 1;
+      if (idx >= 0 && idx < 4) {
+        curr.options[idx] = mOpt[2].trim();
+      }
+      i++; continue;
+    }
+
+    // 정답: ③ 또는 3
+    let mAns = line.match(/^정답\s*[:：]\s*([①②③④]|\d)/);
+    if(mAns && curr){
+      const a = circledToNum(mAns[1]);
+      curr.answer = a-1; // 0-based
+      i++; continue;
+    }
+
+    // 해설: ~ (다음 Q 전까지 누적)
+    let mExp = line.match(/^해설\s*[:：]\s*(.*)$/);
+    if(mExp && curr){
+      let exp = mExp[1];
+      i++;
+      // 다음 Q 전까지 이어붙이기
+      while(i<lines.length && !/^Q\s?\d+/.test(lines[i].trim())){
+        // 해설이 없는 경우 정답 라인이 붙어있을 수 있음.
+        if (!lines[i].trim().startsWith("정답")) {
+            exp += "\n" + lines[i];
+        }
+        i++;
+      }
+      curr.exp = exp.trim();
+      continue;
+    }
+    
+    // 현재 문제에 속해있지만 위 패턴에 걸리지 않은 라인 처리
+    if(curr && line) {
+        // (1)~(4) 또는 ①~④ 패턴이 아닌데 숫자로 시작하는 경우 (e.g. 1. 2. 3. 4.)
+        let mOptNum = line.match(/^(\d)[\.．]\s*(.+)$/);
+        if (mOptNum) {
+            const idx = parseInt(mOptNum[1], 10) - 1;
+             if (idx >= 0 && idx < 4) {
+                curr.options[idx] = mOptNum[2].trim();
+             }
+             i++; continue;
+        }
+        
+        // 해설이 이미 시작된 경우, 이어붙임
+        if(curr.exp) {
+            curr.exp += "\n" + line;
+        }
+    }
+
+    i++;
+  }
+  // 마지막 문제 저장
+  pushCurr();
+
+  // 검증
+  if(items.length<1) throw new Error("문항을 하나도 파싱하지 못했습니다. 원문 형식(Q1 …, (1) …, 정답:, 해설:)을 확인하세요.");
+  
+  // 파싱 오류가 있어도 일단 진행하고, 오류 보고
+  if (lineErrors.length > 0) {
+      console.warn("파싱 오류:\n" + lineErrors.join("\n"));
+      customAlert(`파싱 중 ${lineErrors.length}개 항목에서 오류가 감지되었습니다. (F12 콘솔 확인)`);
+  }
+
+  items.forEach(it=>{
+    if(it.options.some(o=>!o)) {
+        console.warn(`Q${it.id} 선택지에 빈 항목이 있습니다.`);
+        // 빈 항목 채우기
+        it.options = it.options.map((o, idx) => o || `(선택지 ${idx+1} 누락)`);
+    }
+    if(isNaN(it.answer) || it.answer<0 || it.answer>3) {
+        console.warn(`Q${it.id} 정답 인식 실패`);
+        it.answer = 0; // 오류 시 첫 번째 항목을 임시 정답으로
+    }
+  });
+
+  // id 오름차순 정렬
+  items.sort((a,b)=>a.id-b.id);
+  return items;
+}
+
+/* ===========================
+  렌더/진행
+=========================== */
+function newRun(allBank, filterChap="all", mode="shuffle"){
+  let pool = allBank;
+  if(filterChap!=="all"){
+    pool = pool.filter(x=>x.chapter===filterChap);
+  }
+  if(pool.length===0) throw new Error("선택한 챕터에 문항이 없습니다.");
+  let order = pool.map((_,idx)=>idx);
+  if(mode==="shuffle") order = shuffle(order);
+  return {
+    ts: Date.now(),
+    filterChap, mode,
+    pool,
+    order,
+    idx: 0,
+    done: [], // {qid, correct, pick}
+    score: 0
+  };
+}
+function currentItem(r){ return r.pool[r.order[r.idx]] }
+
+function renderProgress(){
+  if (!run || !run.pool) return;
+  const total = run.pool.length;
+  const cur = Math.min(run.idx, total);
+  $$("#progressText").textContent = `진행 ${cur} / ${total}`;
+  $$("#chapterText").textContent = `${run.filterChap==="all"?"전체":run.filterChap} • ${run.mode==="shuffle"?"무작위":"순서"}`;
+  const pct = total? Math.round(cur/total*100) : 0;
+  $$("#progressBar").style.width = pct+"%";
+}
+function showSection(id){
+  ["welcome","quiz","result","review"].forEach(s=>{
+    const el = $$("#"+s);
+    if (el) el.classList.add("hidden");
+  });
+  const targetEl = $$("#"+id);
+  if (targetEl) targetEl.classList.remove("hidden");
+}
+function renderQuestion(){
+  if (!run || !currentItem(run)) {
+      customAlert("오류: 퀴즈 데이터를 불러올 수 없습니다.");
+      showSection("welcome");
+      return;
+  }
+  const it = currentItem(run);
+  renderProgress();
+  $$("#qTitle").textContent = `Q${it.id}. ${it.q}`;
+  $$("#metaText").textContent = `${it.chapter} • Q${run.idx+1}/${run.pool.length}`;
+  const opts = $$("#options");
+  opts.innerHTML = "";
+  $$("#explain").classList.add("hidden");
+  // 옵션
+  it.options.forEach((text, i)=>{
+    const btn = document.createElement("button");
+    btn.type="button";
+    btn.className="option w-full text-left px-4 py-3 rounded-xl border bg-white hover:bg-slate-50";
+    btn.innerHTML = `<span class="font-semibold mr-2">${i+1}.</span>${text.replace(/</g, "&lt;")}`;
+    btn.addEventListener("click",()=>pickAnswer(i));
+    opts.appendChild(btn);
+  });
+  // 다음 문제 버튼 활성화
+  $$("#btnNext").disabled = true;
+  $$("#btnNext").classList.add("opacity-50", "cursor-not-allowed");
+}
+function pickAnswer(i){
+  const it = currentItem(run);
+  const btns = $$$("#options .option");
+  // 이미 선택했다면 리턴
+  if (btns[0] && btns[0].disabled) return;
+  
+  btns.forEach((b,idx)=>{
+    b.disabled = true;
+    if(idx===it.answer) b.classList.add("correct");
+    if(idx===i && i!==it.answer) b.classList.add("incorrect");
+  });
+  // 해설
+  $$("#explainText").textContent = `정답: (${it.answer+1})\n\n${it.exp||"해설이 제공되지 않았습니다."}`;
+  $$("#explain").classList.remove("hidden");
+
+  const correct = (i===it.answer);
+  run.done.push({ qid: it.id, correct, pick: i });
+  if(correct) run.score += 1;
+  save("swp_run", run);
+  
+  // 다음 문제 버튼 활성화
+  $$("#btnNext").disabled = false;
+  $$("#btnNext").classList.remove("opacity-50", "cursor-not-allowed");
+}
+function nextQuestion(){
+  // 답을 선택해야 넘어감
+  if ($$("#btnNext").disabled) {
+      customAlert("답을 선택해 주세요.");
+      return;
+  }
+
+  if(run.idx < run.pool.length-1){
+    run.idx += 1;
+    save("swp_run", run);
+    renderQuestion();
+  }else{
+    // 결과
+    showSection("result");
+    const total = run.pool.length;
+    $$("#resTotal").textContent = total;
+    $$("#resCorrect").textContent = run.score;
+    const score100 = total > 0 ? Math.round(run.score/total*100) : 0;
+    $$("#resScore").textContent = score100;
+    save("swp_run", run);
+  }
+}
+function restartWrongOnly(){
+  const wrongIds = run.done.filter(d=>!d.correct).map(d=>d.qid);
+  if(wrongIds.length===0){ customAlert("오답이 없습니다!"); return; }
+  const pool = bank.filter(b=>wrongIds.includes(b.id));
+  run = {
+    ts: Date.now(),
+    filterChap: "오답",
+    mode: "shuffle",
+    pool,
+    order: shuffle(pool.map((_,i)=>i)),
+    idx: 0, done: [], score: 0
+  };
+  save("swp_run", run);
+  showSection("quiz");
+  renderQuestion();
+}
+function renderReview(){
+  showSection("review");
+  const list = $$("#reviewList");
+  list.innerHTML = "";
+  
+  const doneItems = (run && run.done) ? run.done : [];
+  const wrong = doneItems.filter(d=>!d.correct);
+  
+  if(wrong.length===0){
+    list.innerHTML = `<div class="p-4 bg-emerald-50 border rounded text-emerald-800">오답이 없습니다! 👏</div>`;
+    return;
+  }
+  
+  wrong.forEach(w=>{
+    const it = bank.find(x=>x.id===w.qid);
+    if (!it) return; // 원본 bank에서 못찾는 경우 스킵
+    
+    const box = document.createElement("div");
+    box.className="p-4 border rounded-lg bg-white shadow-sm";
+    box.innerHTML = `
+      <div class="text-sm text-slate-500 mb-1">${it.chapter} • Q${it.id}</div>
+      <div class="font-semibold mb-2">${it.q.replace(/</g, "&lt;")}</div>
+      <ul class="text-sm mb-3 space-y-1">
+        ${it.options.map((o,idx)=>`
+          <li class="${idx===it.answer?'font-semibold text-emerald-700':'text-slate-700'} ${idx===w.pick?'opacity-70':''}">
+            <span class="inline-block w-6">(${idx+1})</span> ${o.replace(/</g, "&lt;")}
+            ${idx===w.pick?' <span class="text-rose-600 font-semibold ml-2">← 내 선택</span>':''}
+            ${idx===it.answer?' <span class="text-emerald-600 font-semibold ml-2">← 정답</span>':''}
+          </li>`).join("")}
+      </ul>
+      <div class="text-sm bg-blue-50 border border-blue-200 rounded p-3 whitespace-pre-wrap leading-relaxed"><b>해설:</b>\n${it.exp||"해설 없음"}</div>
+    `;
+    list.appendChild(box);
+  });
+}
+
+/* ===========================
+  이벤트
+=========================== */
+$$("#btnStart").addEventListener("click", ()=>{
+  try{
+    const chap = $$("#filterChapter").value;
+    const mode = $$("#modeSelect").value;
+    run = newRun(bank, chap, mode);
+    save("swp_run", run);
+    showSection("quiz");
+    renderQuestion();
+  }catch(e){
+    customAlert(e.message);
+  }
+});
+$$("#btnNext").addEventListener("click", nextQuestion);
+$$("#btnRestart").addEventListener("click", ()=>{
+  const chap = (run && run.filterChap==="오답") ? "all" : (run ? run.filterChap : "all");
+  const mode = "shuffle";
+  try {
+    run = newRun(bank, chap, mode);
+    save("swp_run", run);
+    showSection("quiz");
+    renderQuestion();
+  } catch(e) {
+    customAlert(e.message);
+  }
+});
+$$("#btnGoWrong").addEventListener("click", restartWrongOnly);
+$$("#btnReview").addEventListener("click", ()=>{
+  if(!run || !run.done?.length){ customAlert("먼저 퀴즈를 1회 이상 완료해 주세요."); return; }
+  renderReview();
+});
+$$("#btnExport").addEventListener("click", ()=>{
+  if(!run || !run.done?.length){ customAlert("먼저 퀴즈를 진행해 주세요."); return; }
+  const rows = [["qid","chapter","question","my_pick(1-4)","answer(1-4)","is_correct(1/0)"]];
+  run.done.forEach(d=>{
+    const it = bank.find(x=>x.id===d.qid);
+    if (!it) return;
+    rows.push([
+        it.id, 
+        it.chapter, 
+        `"${(it.q||"").replace(/"/g,'""')}"`, // 질문 따옴표 이스케이프
+        d.pick+1, 
+        it.answer+1, 
+        d.correct ? 1 : 0
+    ]);
+  });
+  const csv = rows.map(r=>r.join(",")).join("\n");
+  download(`결과_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`, csv);
+});
+$$("#btnImport").addEventListener("click", ()=>{ $$("#dlg").showModal(); });
+$$("#btnParse").addEventListener("click", ()=>{
+  const raw = $$("#paste").value;
+  if(!raw.trim()){ customAlert("텍스트를 붙여넣어 주세요."); return; }
+  try{
+    const parsed = parsePasted(raw);
+    bank = parsed;
+    save("swp_bank", bank);
+    $$("#dlg").close();
+    customAlert(`총 ${bank.length}문항을 가져왔습니다! 이제 '시작'을 눌러 진행하세요.`);
+    // 재개버튼 갱신
+    const hasRun = !!load("swp_run");
+    $$("#btnResume").classList.toggle("hidden", !hasRun);
+    // 웰컴 화면으로
+    showSection("welcome");
+  }catch(e){
+    customAlert("파싱 오류: " + e.message);
+  }
+});
+$$("#btnReset").addEventListener("click", async ()=>{
+  const confirmed = await customConfirm("진행상황과 저장된 문제 은행(붙여넣기 결과)을 모두 초기화할까요?");
+  if(confirmed){
+    localStorage.removeItem("swp_bank");
+    localStorage.removeItem("swp_run");
+    bank = demoBank.slice();
+    run = null;
+    customAlert("초기화 완료. 데모 데이터로 돌아갑니다.");
+    setTimeout(()=>location.reload(), 500);
+  }
+});
+$$("#btnResume").addEventListener("click", ()=>{
+  const r = load("swp_run");
+  if(!r){ customAlert("재개할 세션이 없습니다."); return; }
+  run = r;
+  
+  if (run.idx >= run.pool.length) {
+      // 이미 완료된 세션
+      showSection("result");
+      const total = run.pool.length;
+      $$("#resTotal").textContent = total;
+      $$("#resCorrect").textContent = run.score;
+      const score100 = total > 0 ? Math.round(run.score/total*100) : 0;
+      $$("#resScore").textContent = score100;
+  } else {
+      // 진행 중인 세션
+      showSection("quiz");
+      renderQuestion();
+  }
+});
+
+// 키보드(1~4,N)
+window.addEventListener("keydown",(e)=>{
+  // 모달이 열려있으면 중지
+  if ($$("#dlg").open || $$("#customConfirmDialog")) return;
+
+  const onQuiz = !$$("#quiz").classList.contains("hidden");
+  if(!onQuiz || !run) return;
+  
+  if(["1","2","3","4"].includes(e.key)){
+    e.preventDefault();
+    const idx = parseInt(e.key,10)-1;
+    const btns = $$$("#options .option");
+    if(btns[idx] && !btns[idx].disabled) btns[idx].click();
+  }else if(e.key.toLowerCase()==="n" || e.key === "Enter" || e.key === "ArrowRight"){
+    e.preventDefault();
+    $$("#btnNext").click();
+  }
+});
+
+/* ===========================
+  초기 표시
+=========================== */
+(function init(){
+  const hasRun = !!load("swp_run");
+  $$("#btnResume").classList.toggle("hidden", !hasRun);
+  showSection("welcome");
+})();
+</script>
+</body>
+</html>
