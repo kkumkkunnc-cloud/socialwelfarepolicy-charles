@@ -94,7 +94,7 @@
             91: "제15강: 사회복지정책의 실천과 사회운동 (Q91 ~ Q100)"
         };
 
-        // 100문제 데이터
+        // 100문제 데이터 (사용자 제공 데이터와 동일)
         const quizData = [
             {
                 id: 1,
@@ -1384,7 +1384,12 @@
             const parentCard = clickedButton.closest(`#card-Q${questionId}`);
             const optionsContainer = parentCard.querySelector('.options-container');
             const allOptionButtons = optionsContainer.querySelectorAll('.option-button');
-            const explanationBox = parentCard.querySelector(`#explanation-Q${questionId}`);
+            
+            // --- 여기가 수정된 부분 ---
+            // 'q.id' 대신 'questionId'를 사용합니다.
+            const explanationBox = parentCard.querySelector(`#explanation-Q${questionId}`); 
+            // -------------------------
+
             const resultText = parentCard.querySelector(`#result-Q${questionId}`);
 
             // 모든 버튼 비활성화
